@@ -100,11 +100,159 @@ router.all('/block',function(req,res,next){
   else
   {
     var data=req.body
-    var datablock=[data.field1,data.field2,data.field5]
+    var datablock=[req.session.username,data.field1,data.field2,data.field5]
     newblocks.push(datablock);
     res.render('message',{'result':'Blockchain Valid and Block Added Successfully','mess':datachain,'rem':newblocks})
   }
 });
+
+router.all('/viewuser',function(req,res,next){
+    var usermess=[]
+    for(i=0;i<datachain.chain.length;i++)
+    {
+        if(datachain.chain[i].data[0]==req.session.username)
+        {
+            // console.log(datachain.chain[i])
+            usermess.push(datachain.chain[i])
+        }
+    }
+    if(req.method=='GET')
+        res.render('viewuser',{'result':'My Blocks','mess':usermess})
+    else
+    {     
+      res.render('viewuser',{'result':'My Blocks','mess':usermess})
+    }
+  });
+
+class Bob
+{
+    constructor()
+    {
+        this.g=2
+        this.p=11
+        this.h=0
+        this.b=0
+        this.secid=0
+        this.s=0
+        this.comp=0
+    }
+
+    secretid(secid)
+    {
+        this.secid=secid
+    }
+
+    receiveh(h)
+    {
+        this.h=h
+        if(Math.random()>0.5)
+            this.b=1
+    }
+
+    receives(s)
+    {
+        this.s=s
+        this.comp=Math.pow(this.g,this.s)%this.p
+
+    }
+}
+
+class Alice
+{
+    constructor()
+    {
+        this.p=11
+        this.g=2
+        this.x=0
+        this.y=0
+        this.h=0
+        this.b=0
+        this.r=0
+        this.s=0
+    }
+
+    secretid(secid)
+    {
+        this.x=secid
+    }
+
+    calculatey()
+    {
+        this.y=Math.pow(this.g,this.x)%this.p
+    }
+
+    calculateh(r)
+    {
+        this.r=r
+        this.h=Math.pow(this.g,this.r)%this.p
+    }
+
+    receiveb(b)
+    {
+        this.b=b
+        this.s=((this.r)+(this.b)*(this.x))%(this.p-1)
+    }
+}
+
+function zkp(a,b)
+{
+    if(a==b)
+    {
+        console.log("Zero Knowledge Proof Completed")
+        return true;
+    }
+    else
+    {
+        console.log("Zero Knowledge Proof Failed")
+        return false;
+    }
+}
+
+function validateUser()
+{
+    let bob=new Bob()
+    let alice=new Alice()
+    p=11,g=2
+    data=""
+    // secid1,secid2
+    usersmodel.logincheck('usersnew',data,function(result){
+        if(result.length==0)
+            console.log("Login Fail")
+        else
+        {
+              var i=0
+              for(i=0;i<result.length;i++)
+              {
+                  for(j=0;j<newblocks.length;j++)
+                  {
+                        if(result[i].username==newblocks[j][0])
+                        {
+                            secid2=result[i].secid
+                            bob.secretid(secid2)
+                        }
+                        if(result[i].username==req.session.username)
+                        {
+                            secid1=result[i].secid
+                            alice.secretid(secid1)
+                        }
+                    }
+              }
+              
+        }
+    })
+    max=p
+    min=0
+    var r =Math.floor(Math.random() * (+max - +min)) + +min;
+    alice.calculatey();
+    alice.calculateh(r);
+    bob.receiveh(alice.h);
+    alice.receiveb(bob.b);
+    bob.receives(alice.s);
+    a=bob.comp
+    b=(bob.h*Math.pow(alice.y,bob.b))%bob.p
+    return zkp(a,b)    
+}
+
 
 router.all('/mineblock',function(req,res,next){
   if(req.method=="GET")
@@ -113,10 +261,26 @@ router.all('/mineblock',function(req,res,next){
   {
     if(datachain.isChainValid() && newblocks.length!=0)
     {
-      datachain.addBlock(new Block(datachain.getLatestBlock().index + 1,Math.floor(Date.now()),newblocks[0]))
-      newblocks.shift()
-      console.log(datachain)
-      res.render('mineblock',{'result':'Blockchain Valid and Block Added Successfully','mess':datachain,'rem':newblocks})
+        counttf=0
+        for(i=0;i<5;i++)
+        {
+            if(validateUser())
+                counttf++
+        }
+        if(counttf==5)
+      {
+        datachain.addBlock(new Block(datachain.getLatestBlock().index + 1,Math.floor(Date.now()),newblocks[0]))
+        newblocks.shift()
+        console.log(datachain)
+        res.render('mineblock',{'result':'Blockchain Valid and Block Added Successfully','mess':datachain,'rem':newblocks})
+      }
+      else
+      {
+        datachain.addBlock(new Block(datachain.getLatestBlock().index + 1,Math.floor(Date.now()),newblocks[0]))
+        newblocks.shift()
+        console.log(datachain)
+        res.render('mineblock',{'result':'Blockchain Valid and Block Added Successfully','mess':datachain,'rem':newblocks})
+      }
     }
     else
     {

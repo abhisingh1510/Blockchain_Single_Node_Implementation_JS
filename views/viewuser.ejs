@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Information Wall</title>
+        <title><%=result%></title>
         <style type="text/css">
             .form-style-9{
                 max-width: 900px;
@@ -138,72 +138,33 @@
             </script>
     </head>
     <body>
-            <form class="form-style-9" method="POST" action="/users/block">
-                <center>
-                    <ul>
-                    <li>
-                        <input type="text" name="field1" class="field-style field-split" placeholder="Applicant ID" />                    
-                    </li>
-                    <li>
-                        <input type="text" name="field2" class="field-style field-split" placeholder="Applicant Name" />                    
-                    </li>
-                    
-                    <textarea name="field5" class="field-style" placeholder="Message" style="width: 100%; height: 200px;"></textarea>
-                    </li>
-                    <li>
-                    <input type="submit" name="sm" value="Send Message" style="padding: 10px; margin: 10px"/>
-                    </li>
-                    </ul>
-                </center>
-            </form>
-            <form class="newform" method="GET" action="/users/mineblock">
-                <center>
-                    <ul>
-                        <li>
-                            <input type="submit" name="mb" value="Mine Block" style="padding: 10px; margin: 10px"/>
-                        </li>
-                        <li>
-                            <span style="font: italic; color: #f4511e">Total <%=rem.length%> Unmined Blocks</span>
-                        </li>
-                    </ul>
-                </center>
-            </form>
-            <form class="newform" method="POST" action="/users/viewuser">
-                <center>
-                    <ul>
-                        <li>
-                            <input type="submit" name="mb" value="View Messages" style="padding: 10px; margin: 10px;"/>
-                        </li>                       
-                    </ul>
-                </center>
-            </form>
-            <form class="newform" method="GET" action="/logout">
-                <center>
-                    <ul>
-                        <li>
-                            <input type="submit" name="mb" value="Logout" style="padding: 10px; margin: 10px;"/>
-                        </li>                       
-                    </ul>
-                </center>
-            </form>
-            <% for(i=1; i<mess.chain.length ; i++){ %>
+            <% for(i=0; i<mess.length ; i++){ %>
             <form class="form-style-9">
                 <center>
                     <ul>
                         <li>
-                            Applicant ID: <%= mess.chain[i].data[1] %>                            
+                            Applicant ID: <%= mess[i].data[1] %>                            
                         </li>
                         <li>
-                            Applicant Name: <%= mess.chain[i].data[2] %>
+                            Applicant Name: <%= mess[i].data[2] %>
                         </li>
                         <li>
-                            <%= mess.chain[i].data[3] %>
+                            <%= mess[i].data[3] %>
                         </li>
                     </ul>
                     
                 </center>
             </form>
             <% } %>
+            <form class="newform" method="GET" action="/users/block">
+                <center>
+                    <ul>
+                        <li>
+                            <input type="submit" value="Back to Messages" style="padding: 10px; margin: 10px"/>
+                        </li>
+                    </ul>
+                </center>
+            </form>
          
     </body>
 </html>

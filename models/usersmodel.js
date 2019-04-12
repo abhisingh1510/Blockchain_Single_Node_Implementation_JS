@@ -4,12 +4,15 @@ var db=require('./conn.js')
 
 function logincheck(tbl_nm,data,cb)
 {
-	str="'username'"+":'"+data.username+"', 'password' :"+"'"+data.password+"'"
+	//str="{'username'"+":'"+data.username+"','password':"+"'"+data.password+"'}"
 	db.collection(tbl_nm).find().toArray(function(err,result){
 		if(err)
 			console.log(err)
 		else
+		{
+			//console.log(result)
 			cb(result)
+		}
 	})	
 }
 
@@ -67,16 +70,5 @@ function addblock(tbl_nm,data,cb)
 	// 		cb(result)
 	// })	
 }
-/*
-function addcategory(cat_nm,cat_img_nm,cb)
-{
-	var query="insert into addcat values (NULL,'"+cat_nm+"','"+cat_img_nm+"')"
-	con.query(query,function(err,result){
-		if(err)
-			console.log(err)
-		else
-			cb(result)
-	})	
-}
-*/
+
 module.exports={logincheck:logincheck,addblock:addblock,fetchalldata:fetchalldata}
